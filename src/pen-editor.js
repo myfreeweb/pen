@@ -1,15 +1,6 @@
 const penEditorOwnerDoc = document.currentScript.ownerDocument
 
 class PenEditor extends HTMLElement {
-  static debounce(f, delay) {
-    let timeout;
-    return () => {
-      const args = arguments;
-      clearTimeout(timeout);
-      timeout = setTimeout(() => f.apply(this, args), delay);
-    }
-  }
-
   static get observedAttributes() {
     return ['hinted'];
   }
@@ -20,9 +11,9 @@ class PenEditor extends HTMLElement {
     this.shadowRoot.appendChild(penEditorOwnerDoc.getElementById('pen-editor-ce-template').content.cloneNode(true));
     this.editorElement = document.createElement('div');
     this.shadowRoot.appendChild(this.editorElement);
-    this.observer = new MutationObserver(PenEditor.debounce(m => {
+    this.observer = new MutationObserver(m => {
       this.dispatchEvent(new CustomEvent('value-changed'));
-    }, 200));
+    });
   }
 
   connectedCallback() {
