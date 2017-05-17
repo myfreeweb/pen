@@ -48,6 +48,35 @@ var options = {
 var editor = new Pen(options);
 ```
 
+#### 1.4 use as a Custom Element
+
+Pen includes a [Custom Elements v1](https://developers.google.com/web/fundamentals/getting-started/primers/customelements) / [Shadow DOM v1](https://developers.google.com/web/fundamentals/getting-started/primers/shadowdom) Web Component wrapper.
+
+```html
+<link rel="import" href="bower_components/pen/src/pen-editor.html">
+<style>
+pen-editor {
+  color: #444;
+  font: 2em cursive;
+  --pen-quote-border-color: red;
+  --pen-link-color: green;
+}
+</style>
+<pen-editor hinted list="bold italic underline createlink insertimage" value="<p>Initial value</p>"></pen-editor>
+<script>
+  const pen = document.querySelector('pen-editor')
+  pen.addEventListener('value-changed', e => {
+    console.log(pen.value)
+  })
+</script>
+```
+
+In [Polymer 2](https://www.polymer-project.org), it is possible to use two-way binding for the value:
+
+```html
+<pen-editor value="{{myHtmlData}}"></pen-editor>
+```
+
 ## 2. configure
 
 The following object sets up the default settings of Pen:

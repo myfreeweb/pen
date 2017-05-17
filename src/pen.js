@@ -1,7 +1,7 @@
 /*! Licensed under MIT, https://github.com/sofish/pen */
 (function(root, doc) {
 
-  var Pen, debugMode, selection, utils = {};
+  var Pen, debugMode, utils = {};
   var toString = Object.prototype.toString;
   var slice = Array.prototype.slice;
 
@@ -91,7 +91,10 @@
       titles: {},
       cleanAttrs: ['id', 'class', 'style', 'name'],
       cleanTags: ['script'],
-      linksInNewWindow: false
+      linksInNewWindow: false,
+      menuParent: doc.body,
+      docHead: doc.head,
+      docFragment: doc
     };
 
     // user-friendly config
@@ -138,13 +141,13 @@
   }
 
   function commandWrap(ctx, tag, value) {
-    value = '<' + tag + '>' + (value||selection.toString()) + '</' + tag + '>';
+    value = '<' + tag + '>' + (value||ctx.selection.toString()) + '</' + tag + '>';
     return commandOverall(ctx, 'insertHTML', value);
   }
 
   function commandLink(ctx, tag, value) {
     if (ctx.config.linksInNewWindow) {
-      value = '< a href="' + value + '" target="_blank">' + (selection.toString()) + '</a>';
+      value = '< a href="' + value + '" target="_blank">' + (ctx.selection.toString()) + '</a>';
       return commandOverall(ctx, 'insertHTML', value);
     } else {
       return commandOverall(ctx, tag, value);
@@ -175,7 +178,7 @@
       ctx._menu.innerHTML = icons;
       ctx._inputBar = ctx._menu.querySelector('input');
       toggleNode(ctx._menu, true);
-      doc.body.appendChild(ctx._menu);
+      ctx.config.menuParent.appendChild(ctx._menu);
     }
     if (ctx._toolbar && ctx._inputBar) toggleNode(ctx._inputBar);
   }
@@ -522,7 +525,7 @@
     checkPlaceholder(this);
 
     // save the selection obj
-    this.selection = selection;
+    this.selection = this.config.docFragment.getSelection();
 
     // define local events
     this._events = {change: []};
@@ -584,7 +587,7 @@
   };
 
   Pen.prototype.getRange = function() {
-    var editor = this.config.editor, range = selection.rangeCount && selection.getRangeAt(0);
+    var editor = this.config.editor, range = this.selection.rangeCount && this.selection.getRangeAt(0);
     if (!range) range = doc.createRange();
     if (!containsNode(editor, range.commonAncestorContainer)) {
       range.selectNodeContents(editor);
@@ -600,8 +603,8 @@
       range.collapse(false); // set to end
     }
     try {
-      selection.removeAllRanges();
-      selection.addRange(range);
+      this.selection.removeAllRanges();
+      this.selection.addRange(range);
     } catch (e) {/* IE throws error sometimes*/}
     return this;
   };
@@ -731,7 +734,7 @@
   // show menu
   Pen.prototype.menu = function() {
     if (!this._menu) return this;
-    if (selection.isCollapsed) {
+    if (this._range.collapsed) {
       this._menu.style.display = 'none'; //hide menu
       this._inputActive = false;
       return this;
@@ -754,7 +757,7 @@
     // store the stylesheet used for positioning the menu horizontally
     if (this._stylesheet === undefined) {
       var style = document.createElement("style");
-      document.head.appendChild(style);
+      this.config.docHead.appendChild(style);
       this._stylesheet = stylesheet = style.sheet;
     }
     // display block to caculate its width & height
@@ -803,7 +806,7 @@
     if (!isAJoke) {
       removeAllListeners(this);
       try {
-        selection.removeAllRanges();
+        this.selection.removeAllRanges();
         if (this._menu) this._menu.parentNode.removeChild(this._menu);
       } catch (e) {/* IE throws error sometimes*/}
     } else {
@@ -864,7 +867,6 @@
 
   // make it accessible
   if (doc.getSelection) {
-    selection = doc.getSelection();
     root.Pen = Pen;
   }
 
