@@ -38,7 +38,11 @@ class PenEditor extends HTMLElement {
       });
       this.hinted = this.hasAttribute('hinted');
       this.value = this.getAttribute('value');
-      this.removeAttribute('value')
+      if (this.nextContent) {
+        this.value = this.nextContent;
+        delete this.nextContent;
+      }
+      this.removeAttribute('value');
     } else {
       this.pen.rebuild();
     }
@@ -83,7 +87,11 @@ class PenEditor extends HTMLElement {
   }
 
   set value(val) {
-    return this.pen.setContent(val);
+    if (this.pen) {
+      return this.pen.setContent(val);
+    } else {
+      this.nextContent = val;
+    }
   }
 
   attributeChangedCallback(name, oldValue, newValue) {

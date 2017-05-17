@@ -109,6 +109,21 @@
     return defaults;
   };
 
+  utils.scrollableParent = function(node) {
+    if (!node) {
+      return null;
+    }
+    if (node instanceof ShadowRoot) {
+      return utils.scrollableParent(node.host);
+    }
+    var overflowY = root.getComputedStyle(node).overflowY;
+    if (overflowY !== 'visible' && overflowY !== 'hidden') {
+      return node;
+    } else {
+      return utils.scrollableParent(node.parentNode);
+    }
+  }
+
   function commandOverall(ctx, cmd, val) {
     var message = ' to exec 「' + cmd + '」 command' + (val ? (' with value: ' + val) : '');
 
@@ -204,6 +219,7 @@
       // change menu offset when window resize / scroll
       addListener(ctx, root, 'resize', setpos);
       addListener(ctx, root, 'scroll', setpos);
+      addListener(ctx, utils.scrollableParent(editor), 'scroll', setpos);
 
       // toggle toolbar on mouse select
       var selecting = false;
@@ -236,7 +252,7 @@
       // Hide menu when focusing outside of editor
       outsideClick = function(e) {
         if (ctx._menu && !containsNode(editor, e.target) && !containsNode(ctx._menu, e.target)) {
-          removeListener(ctx, doc, 'click', outsideClick);
+          removeListener(ctx, root, 'click', outsideClick);
           toggleMenu(100);
         }
       };
@@ -333,7 +349,7 @@
     // listen for placeholder
     addListener(ctx, editor, 'focus', function() {
       if (ctx.isEmpty()) lineBreak(ctx, true);
-      addListener(ctx, doc, 'click', outsideClick);
+      addListener(ctx, root, 'click', outsideClick);
     });
 
     addListener(ctx, editor, 'blur', function() {
