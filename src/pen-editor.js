@@ -1,6 +1,10 @@
-const penEditorOwnerDoc = document.currentScript.ownerDocument
+import Pen from './pen.js';
+import markdown from './markdown.js';
 
-class PenEditor extends HTMLElement {
+Pen.prototype.markdown = markdown;
+Pen.prototype.cssPath = 'src/pen.css';
+
+export default class PenEditor extends HTMLElement {
   static get observedAttributes() {
     return ['hinted'];
   }
@@ -8,7 +12,7 @@ class PenEditor extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(penEditorOwnerDoc.getElementById('pen-editor-ce-template').content.cloneNode(true));
+    this.shadowRoot.innerHTML = `<style>@import url("${Pen.prototype.cssPath}")</style>`;
     this.editorElement = document.createElement('div');
     this.shadowRoot.appendChild(this.editorElement);
     this.observer = new MutationObserver(m => {

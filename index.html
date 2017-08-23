@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pen - What You See Is What You Get (WYSIWYG)</title>
+  <link rel="stylesheet" href="src/pen-font.css"/>
   <style>
   *{padding:0;margin:0;}
   html{border-top:10px #1abf89 solid;}
@@ -43,45 +44,21 @@
     }
   }
   </style>
-  <link rel="import" href="src/pen.css" />
+  <script type="module" src="src/pen-editor.js"></script>
 </head>
 <body>
 
-<div id="toolbar">
-  <span id="mode" class="icon-mode"></span>
-  <span id="hinted" class="icon-pre disabled" title="Toggle Markdown Hints"></span>
-  <span id="tomd" title="to markdown">MD</span>
-</div>
-
-<!-- <div id="custom-toolbar" class="pen-menu pen-menu" style="display: block; top: 20px; left: 10px;">
-  <i class="pen-icon icon-insertimage" data-action="insertimage"></i>
-  <i class="pen-icon icon-blockquote" data-action="blockquote"></i>
-  <i class="pen-icon icon-h2" data-action="h2"></i>
-  <i class="pen-icon icon-h3" data-action="h3"></i>
-  <i class="pen-icon icon-p active" data-action="p"></i>
-  <i class="pen-icon icon-code" data-action="code"></i>
-  <i class="pen-icon icon-insertorderedlist" data-action="insertorderedlist"></i>
-  <i class="pen-icon icon-insertunorderedlist" data-action="insertunorderedlist"></i>
-  <i class="pen-icon icon-inserthorizontalrule" data-action="inserthorizontalrule"></i>
-  <i class="pen-icon icon-indent" data-action="indent"></i>
-  <i class="pen-icon icon-outdent" data-action="outdent"></i>
-  <i class="pen-icon icon-bold" data-action="bold"></i>
-  <i class="pen-icon icon-italic" data-action="italic"></i>
-  <i class="pen-icon icon-underline" data-action="underline"></i>
-  <i class="pen-icon icon-createlink" data-action="createlink"></i>
-</div> -->
-
-<div data-toggle="pen" data-placeholder="im a placeholder">
+  <pen-editor hinted list="bold italic underline createlink insertimage" value="
   <h2>Enjoy live editing (+markdown)</h2>
 
   <p><b><i>Click to edit, Select to apply effect, click items of toolbar to toggle effects.</i></b></p>
   <hr>
   <p>Horizontal-Rule can be inserted by click「...」on the toolbar or just type「... 」/「--- 」/「*** 」at line start. Note that
     there's a SPACE at the end of a command.</p>
-  <p><img src="https://files.slack.com/files-pri/T02SY1UGK-F02UKR9HH/61fecdffjw1em2euxugtdg208w06okjm.gif" alt="oh my god"/></p>
+  <p><img src='https://files.slack.com/files-pri/T02SY1UGK-F02UKR9HH/61fecdffjw1em2euxugtdg208w06okjm.gif' alt='oh my god'/></p>
   <hr>
   <p>To link or unlink, please press the <i>ENTER</i> key after you filled the input field with your a link. A <a
-    href="/sofish">link</a> can be unlink by applying an empty value to the input field.
+    href='/sofish'>link</a> can be unlink by applying an empty value to the input field.
 
   <p>
   <ul>
@@ -89,66 +66,13 @@
     <li>Use the toolbar or use markdown syntax like「<b>1. </b>」,「<b>- </b>」or「<b>* </b>」</li>
   </ul>
   <blockquote>You can quote text by type「<b>&gt;</b>」at line start.</blockquote>
-  <p>What about add underline to text? "<u>Stay Hungry, Stay Foolish - <i>Steve Jobs</i></u>".</p>
+  <p>What about add underline to text? '<u>Stay Hungry, Stay Foolish - <i>Steve Jobs</i></u>'.</p>
   <pre>A code block is also supported by type 「```」 at line start and press SPACE.</pre>
-  <p>For more, please checkout: <a href="https://github.com/sofish/pen#readme" target="_blank">https://github.com/sofish/pen#readme</a>
+  <p>For more, please checkout: <a href='https://github.com/sofish/pen#readme' target='_blank'>https://github.com/sofish/pen#readme</a>
   </p>
-</div>
+"></pen-editor>
 
 <a id="fork" href="https://github.com/sofish/pen" target="_blank"><img
   src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
-
-<script src="src/pen.js"></script>
-<script src="src/markdown.js"></script>
-<script type="text/javascript">
-
-  // config
-  var options = {
-    // toolbar: document.getElementById('custom-toolbar'),
-    editor: document.querySelector('[data-toggle="pen"]'),
-    debug: true,
-    list: [
-      'insertimage', 'blockquote', 'h2', 'h3', 'p', 'code', 'insertorderedlist', 'insertunorderedlist', 'inserthorizontalrule',
-      'indent', 'outdent', 'bold', 'italic', 'underline', 'createlink'
-    ]
-  };
-
-  // create editor
-  var pen = window.pen = new Pen(options);
-
-  pen.focus();
-
-  // toggle editor mode
-  document.querySelector('#mode').addEventListener('click', function() {
-    var text = this.textContent;
-
-    if(this.classList.contains('disabled')) {
-      this.classList.remove('disabled');
-      pen.rebuild();
-    } else {
-      this.classList.add('disabled');
-      pen.destroy();
-    }
-  });
-
-  // export content as markdown
-  document.querySelector('#tomd').addEventListener('click', function() {
-    var text = pen.toMd();
-    document.body.innerHTML = '<a href="javascript:location.reload()">&larr;back to editor</a><br><br><pre>' + text + '</pre>';
-  });
-
-  // toggle editor mode
-  document.querySelector('#hinted').addEventListener('click', function() {
-    var pen = document.querySelector('.pen')
-
-    if(pen.classList.contains('hinted')) {
-      pen.classList.remove('hinted');
-      this.classList.add('disabled');
-    } else {
-      pen.classList.add('hinted');
-      this.classList.remove('disabled');
-    }
-  });
-</script>
 </body>
 </html>
